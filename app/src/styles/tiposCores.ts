@@ -1,4 +1,3 @@
-// src/styles/tiposCores.ts
 export const coresPorTipo: Record<string, string> = {
   fire: '#F08030',
   water: '#6890F0',

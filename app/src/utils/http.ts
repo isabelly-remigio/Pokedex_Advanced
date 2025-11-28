@@ -12,7 +12,6 @@ function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Retry exponencial + jitter
 async function retryFetch<T>(
   fetcher: () => Promise<T>,
   tentativas = 3,
@@ -39,13 +38,11 @@ export async function fetchJson<T>(
   timeoutMs = 8000,
   usarCache = true
 ): Promise<T> {
-  // 1️⃣ Verificar cache em memória
   if (usarCache && cacheMemoria[url]) {
     const entry: CacheEntry<T> = cacheMemoria[url];
     if (Date.now() - entry.timestamp < TTL) return entry.data;
   }
 
-  // 2️⃣ Verificar AsyncStorage
   if (usarCache) {
     const stored = await AsyncStorage.getItem(url);
     if (stored) {
@@ -54,7 +51,6 @@ export async function fetchJson<T>(
     }
   }
 
-  // 3️⃣ Configurar AbortController + timeout
   const controller = new AbortController();
   const idTimeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -69,7 +65,6 @@ export async function fetchJson<T>(
       return (await res.json()) as T;
     });
 
-    // 4️⃣ Salvar no cache memória + AsyncStorage
     if (usarCache) {
       const entry: CacheEntry<T> = { timestamp: Date.now(), data };
       cacheMemoria[url] = entry;

@@ -1,4 +1,3 @@
-// src/styles/CardPokemon.styles.ts
 import { StyleSheet } from 'react-native';
 
 export const estilosCard = StyleSheet.create({

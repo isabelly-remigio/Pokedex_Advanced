@@ -26,8 +26,6 @@ export default function Home() {
   const abortRef = useRef<AbortController | null>(null); // para paginação/detalhes
   const searchAbortRef = useRef<AbortController | null>(null); // para pesquisa
   const { online } = useConectividade();
-
-  // novos estados para busca
   const [buscaAtiva, setBuscaAtiva] = useState(false);
   const [resultadoBusca, setResultadoBusca] = useState<any[]>([]);
   const [buscaCarregando, setBuscaCarregando] = useState(false);
@@ -51,7 +49,7 @@ export default function Home() {
         res = await listarPokemons({ limite: lim, offset: newOffset, sinalAbort: abortRef.current.signal });
       }
 
-const concurrency = 5;
+const concurrency = 5; // 5 vezes simultâneas
 const mapeados: any[] = [];
 
 for (let i = 0; i < res.results.length; i += concurrency) {
@@ -72,6 +70,7 @@ for (let i = 0; i < res.results.length; i += concurrency) {
 }
 
 
+    //quando api dar erro, avisa o usuário que tem um problema
       if (newOffset === 0) setItems(mapeados);
       else setItems(prev => [...prev, ...mapeados]);
 
@@ -104,12 +103,11 @@ for (let i = 0; i < res.results.length; i += concurrency) {
     setCarregandoMais(false);
   };
 
-  // -------- BUSCA: ativa a partir de 3 letras (substring) --------
+//buuca ativa apartir de 3 letrar
   useEffect(() => {
-    // limpar estados de busca quando termo for curto
     if (!busca || busca.trim().length < 3) {
-      // cancelar busca em andamento
-      searchAbortRef.current?.abort();
+
+        searchAbortRef.current?.abort();
       setBuscaAtiva(false);
       setResultadoBusca([]);
       setBuscaCarregando(false);
@@ -118,7 +116,7 @@ for (let i = 0; i < res.results.length; i += concurrency) {
       return;
     }
 
-    // quando aqui, temos >= 3 chars -> fazer busca
+    // quando aqui, temos >= 3 palavras -> fazer busca
     const termo = busca.trim().toLowerCase();
     setBuscaAtiva(true);
     setBuscaCarregando(true);
@@ -142,7 +140,7 @@ for (let i = 0; i < res.results.length; i += concurrency) {
           setResultadoBusca([]);
           setNenhumEncontrado(`Nenhum Pokémon encontrado para "${busca}"`);
         } else {
-          // mapear para estrutura exibível (id + imagem)
+          // mapear para estrutura visivel (id + imagem)
           const mapeados = encontrados.map((r: any) => {
             const id = extrairIdDaUrl(r.url);
             const imagem = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
@@ -152,8 +150,8 @@ for (let i = 0; i < res.results.length; i += concurrency) {
         }
       } catch (e: any) {
         if (e?.name === 'AbortError') {
-          // cancelada pelo usuário — ignora
-          return;
+
+            return;
         }
         console.warn('Erro na busca', e);
         setBuscaErro('Erro ao buscar Pokémon. Verifique a conexão.');
@@ -171,6 +169,8 @@ for (let i = 0; i < res.results.length; i += concurrency) {
   const listaParaRender = buscaAtiva ? resultadoBusca : items;
   const estaCarregandoInicial = carregando && items.length === 0;
 
+
+  // pagina principal
   return (
   <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
   <View style={{ flex: 1, padding: 16, paddingTop: 32 }}>
@@ -180,10 +180,9 @@ for (let i = 0; i < res.results.length; i += concurrency) {
   onSelectType={setTipo}
   onClearType={() => {
     setTipo('');
-    setBusca(''); // opcional, deixa reset total
+    setBusca(''); 
   }}
 />
-
 
         {online === false && (
           <Text style={{ color: '#b00', textAlign: 'center', marginBottom: 8 }}>
@@ -191,7 +190,6 @@ for (let i = 0; i < res.results.length; i += concurrency) {
           </Text>
         )}
 
-        {/* status da busca */}
         {buscaAtiva && buscaCarregando && (
           <View style={{ alignItems: 'center', marginVertical: 12 }}>
             <ActivityIndicator />

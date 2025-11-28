@@ -11,7 +11,7 @@ export function useBusca(debounceMs = 450) {
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    // limpar debounce ao desmontar
+    // limpar debounce ao apagar
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       abortRef.current?.abort();
@@ -60,7 +60,6 @@ export function useBusca(debounceMs = 450) {
       }
     }, debounceMs);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [termo]);
 
   return {

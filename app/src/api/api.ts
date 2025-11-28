@@ -1,11 +1,11 @@
 // src/api.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
+// configurações globais da api
 const BASE_URL = 'https://pokeapi.co/api/v2';
 const TIMEOUT_MS = 8000;
 const TENTATIVAS = 3;
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutos
+const CACHE_TTL = 30 * 60 * 1000; // os 30 minutos
 const STORAGE_PREFIX = '@meu-pokedex:';
 
 export type ResultadoLista = {
@@ -14,12 +14,10 @@ export type ResultadoLista = {
   previous: string | null;
   results: Array<{ name: string; url: string }>;
 };
-
-/* ---------------- CACHE EM MEMÓRIA ---------------- */
+//o cache
 type CacheEntry = { ts: number; dados: any };
 const cacheMemoria = new Map<string, CacheEntry>();
 
-/* ---------------- HELPERS ---------------- */
 function gerarChave(url: string) {
   return `${STORAGE_PREFIX}${encodeURIComponent(url)}`;
 }
@@ -33,7 +31,7 @@ async function lerCachePersistente(chave: string): Promise<CacheEntry | null> {
     return null;
   }
 }
-
+// Salvar cache no AsyncStorage
 async function salvarCachePersistente(chave: string, dados: any) {
   try {
     await AsyncStorage.setItem(chave, JSON.stringify({ ts: Date.now(), dados }));
@@ -46,8 +44,7 @@ function cacheValido(entry?: CacheEntry | null) {
   if (!entry) return false;
   return Date.now() - entry.ts < CACHE_TTL;
 }
-
-/* ---------------- REQUISIÇÃO SIMPLES (timeout + retry) ---------------- */
+// Função fetch com retry e timeout
 async function fetchComRetry(
   url: string,
   opts: { timeoutMs?: number; tentativas?: number; sinalAbort?: AbortSignal | null } = {}
@@ -102,11 +99,9 @@ async function fetchComRetry(
   throw ultimoErro ?? new Error('Erro desconhecido');
 }
 
-/* ---------------- FUNÇÕES PÚBLICAS ---------------- */
+//funcoes principais
 
-/**
- * Listar Pokémons (limit/offset)
- */
+//litar pokemons
 export async function listarPokemons({
   limite = 20,
   offset = 0,
@@ -121,11 +116,9 @@ export async function listarPokemons({
   const endpoint = `${BASE_URL}/pokemon?limit=${limite}&offset=${offset}`;
   const chave = gerarChave(endpoint);
 
-  // tentar cache memória
   const mem = cacheMemoria.get(chave);
   if (usarCache && cacheValido(mem)) return mem!.dados;
 
-  // tentar cache persistente
   if (usarCache) {
     const pers = await lerCachePersistente(chave);
     if (cacheValido(pers)) {
@@ -145,10 +138,8 @@ export async function listarPokemons({
   return dados as ResultadoLista;
 }
 
-/**
- * Listar pokemons por tipo (ex.: "fire", "water")
- * Retorna um array simples com { name, url } para compatibilidade
- */
+
+//listagem de pokemons por tipo
 export async function listarPorTipo({
   tipo,
   usarCache = true,
@@ -174,7 +165,7 @@ export async function listarPorTipo({
 
   const dados = await fetchComRetry(endpoint, { timeoutMs: TIMEOUT_MS, tentativas: TENTATIVAS, sinalAbort });
 
-  // o endpoint /type/{name} retorna objetos; normalizamos para { pokemon: [...] }
+  // o endpoint /type/{name} 
   const lista = (dados.pokemon ?? []).map((p: any) => p.pokemon);
   const resultado = { pokemon: lista };
 
