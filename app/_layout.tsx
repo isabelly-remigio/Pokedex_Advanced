@@ -1,5 +1,15 @@
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router';
+import { NativeBaseProvider } from 'native-base';
 
 export default function RootLayout() {
-  return <Stack />;
+  return (
+    <NativeBaseProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false, // esconde o header de todas as telas
+        }}
+      >
+      </Stack>
+    </NativeBaseProvider>
+  );
 }

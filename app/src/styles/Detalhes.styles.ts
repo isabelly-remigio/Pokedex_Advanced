@@ -1,0 +1,26 @@
+import { StyleSheet } from 'react-native';
+
+export const estilosDetalhes = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  card: { backgroundColor: '#fff', borderRadius: 12, padding: 20, elevation: 3 },
+  imagem: { width: 180, height: 180, alignSelf: 'center' },
+  nome: { fontSize: 24, fontWeight: '700', textTransform: 'capitalize', textAlign: 'center', marginTop: 12 },
+  tipoRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 10 },
+  tipoBadge: { backgroundColor: '#eee', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, marginHorizontal: 4 },
+  tipoText: { textTransform: 'capitalize' },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
+  statsContainer: { marginTop: 16 },
+  statsTitle: { fontWeight: '700', marginBottom: 8 },
+  statRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  statName: { width: 110, textTransform: 'capitalize' },
+  statBarFundo: { height: 10, backgroundColor: '#eee', flex: 1, borderRadius: 8, marginLeft: 8 },
+  statBar: { height: 10, borderRadius: 8, backgroundColor: '#ef5350' },
+  statValue: { marginLeft: 8 },
+  descricaoContainer: { marginTop: 20 },
+  descricaoTitle: { fontWeight: '700', marginBottom: 6 },
+  descricaoText: { lineHeight: 22 },
+  voltar: { marginBottom: 16 },
+  botao: { marginTop: 12, backgroundColor: '#ef5350', padding: 12, borderRadius: 8 },
+  botaoText: { color: '#fff', fontWeight: '700' },
+});
